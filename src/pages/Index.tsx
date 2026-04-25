@@ -5,13 +5,20 @@ const HERO_BG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5
 const FIGURES_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/files/399b6811-f3df-4f77-812d-2fe6d059c927.jpg";
 const CRAFT_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/files/c596f571-2945-42a0-a21c-87e7ebf46f05.jpg";
 
+// Real hero photos
+const LISTOROG_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/bucket/a3064c08-c90f-4d3a-aba1-76d4f5cf07fe.png";
+const DREVLIN_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/bucket/4825ce46-c1d4-422f-811e-269ae9bcf456.png";
+const EMIRO_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/bucket/035e76a2-8a75-4012-b786-6501103bbb95.png";
+const NERELIY_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/bucket/ea7a0815-d083-4f46-84b3-96c4fa65cdfb.png";
+const AREYA_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/bucket/c81c87b4-2625-4276-8fc0-4bad85f666e6.png";
+
 const heroes = [
-  { name: "Аэрея", state: "Свобода", meaning: "Приносит свободу мыслей", color: "#8BA3B0", emoji: "🌬️", symbol: "~" },
-  { name: "Игнитрис", state: "Энергия", meaning: "Возвращает внутренний огонь", color: "#C4963A", emoji: "🔥", symbol: "∆" },
-  { name: "Листорог", state: "Опора", meaning: "Даёт опору и корни", color: "#7A8C6E", emoji: "🌿", symbol: "Ψ" },
-  { name: "Эмиро", state: "Любовь", meaning: "Открывает сердце", color: "#B87A8A", emoji: "💖", symbol: "♡" },
-  { name: "Древлин", state: "Спокойствие", meaning: "Приносит тишину внутри", color: "#8B6B4A", emoji: "🪶", symbol: "∞" },
-  { name: "Нерелий", state: "Эмоции", meaning: "Успокаивает чувства", color: "#6B8BA3", emoji: "💧", symbol: "◯" },
+  { name: "Аэрея", state: "Свобода", meaning: "Приносит свободу мыслей", color: "#8BA3B0", emoji: "🌬️", symbol: "~", img: AREYA_IMG },
+  { name: "Листорог", state: "Опора", meaning: "Даёт опору и корни", color: "#7A8C6E", emoji: "🌿", symbol: "Ψ", img: LISTOROG_IMG },
+  { name: "Эмиро", state: "Любовь", meaning: "Открывает сердце", color: "#B87A8A", emoji: "💖", symbol: "♡", img: EMIRO_IMG },
+  { name: "Древлин", state: "Спокойствие", meaning: "Приносит тишину внутри", color: "#8B6B4A", emoji: "🪶", symbol: "∞", img: DREVLIN_IMG },
+  { name: "Нерелий", state: "Эмоции", meaning: "Успокаивает чувства", color: "#6B8BA3", emoji: "💧", symbol: "◯", img: NERELIY_IMG },
+  { name: "Игнитрис", state: "Энергия", meaning: "Возвращает внутренний огонь", color: "#C4963A", emoji: "🔥", symbol: "∆", img: null },
 ];
 
 const states = [
@@ -237,10 +244,11 @@ function HeroSection() {
         </p>
 
         <h1
-          className="text-6xl md:text-8xl lg:text-9xl leading-none mb-8"
+          className="leading-none mb-6 md:mb-8"
           style={{
             fontFamily: "'Cormorant Garamond', serif",
             fontWeight: 300,
+            fontSize: "clamp(3rem, 12vw, 8rem)",
             color: "var(--color-dark)",
             opacity: loaded ? 1 : 0,
             transform: loaded ? "translateY(0)" : "translateY(30px)",
@@ -253,7 +261,8 @@ function HeroSection() {
         </h1>
 
         <p
-          className="text-lg md:text-xl max-w-xl mx-auto mb-12 leading-relaxed"
+          className="max-w-xl mx-auto mb-10 md:mb-12 leading-relaxed"
+          style={{ fontSize: "clamp(0.95rem, 3vw, 1.2rem)" }}
           style={{
             fontFamily: "'Golos Text', sans-serif",
             fontWeight: 300,
@@ -337,7 +346,7 @@ function StatesSection() {
   const [active, setActive] = useState(0);
 
   return (
-    <section id="states" className="py-32 px-6" style={{ background: "var(--color-milk)" }}>
+    <section id="states" className="py-16 md:py-32 px-4 md:px-6" style={{ background: "var(--color-milk)" }}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <p className="section-label reveal mb-4">Твоё состояние</p>
@@ -354,7 +363,7 @@ function StatesSection() {
             <button
               key={s.name}
               onClick={() => setActive(i)}
-              className={`reveal reveal-delay-${i + 1} p-8 text-left transition-all duration-500 group`}
+              className={`reveal reveal-delay-${i + 1} p-5 md:p-8 text-left transition-all duration-500 group`}
               style={{
                 background: active === i
                   ? "linear-gradient(135deg, var(--color-wood), var(--color-gold))"
@@ -415,7 +424,7 @@ function HeroesSection() {
   return (
     <section
       id="heroes"
-      className="py-32 px-6"
+      className="py-16 md:py-32 px-4 md:px-6"
       style={{
         background: "linear-gradient(180deg, var(--color-milk) 0%, rgba(139,107,74,0.08) 100%)",
       }}
@@ -443,60 +452,96 @@ function HeroesSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
           {heroes.map((hero, i) => (
             <div
               key={hero.name}
-              className={`reveal reveal-delay-${(i % 3) + 1} card-hover group cursor-pointer`}
+              className={`reveal reveal-delay-${(i % 3) + 1} card-hover group cursor-pointer overflow-hidden`}
               style={{
-                background: "rgba(245,240,232,0.8)",
+                background: "rgba(245,240,232,0.85)",
                 border: "1px solid rgba(212,184,150,0.3)",
                 backdropFilter: "blur(10px)",
               }}
             >
+              {/* Hero photo */}
+              <div
+                className="relative overflow-hidden"
+                style={{
+                  background: `linear-gradient(135deg, rgba(245,240,232,1) 0%, ${hero.color}18 100%)`,
+                  minHeight: "200px",
+                }}
+              >
+                {hero.img ? (
+                  <img
+                    src={hero.img}
+                    alt={hero.name}
+                    className="w-full transition-transform duration-700 group-hover:scale-105"
+                    style={{
+                      objectFit: "contain",
+                      maxHeight: "220px",
+                      padding: "1rem 1rem 0",
+                      display: "block",
+                      margin: "0 auto",
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="flex items-center justify-center"
+                    style={{ minHeight: "200px" }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: "5rem",
+                        color: hero.color,
+                        opacity: 0.4,
+                        lineHeight: 1,
+                      }}
+                    >
+                      {hero.symbol}
+                    </span>
+                  </div>
+                )}
+                {/* Color accent */}
+                <div
+                  className="absolute bottom-0 left-0 right-0 h-8"
+                  style={{
+                    background: `linear-gradient(180deg, transparent, ${hero.color}20)`,
+                  }}
+                />
+              </div>
+
               {/* Color stripe */}
               <div
-                className="h-1 w-full"
+                className="h-0.5 w-full"
                 style={{ background: `linear-gradient(90deg, ${hero.color}, transparent)` }}
               />
 
-              <div className="p-8">
-                {/* Symbol */}
-                <div
-                  className="text-5xl mb-6 transition-transform duration-500 group-hover:scale-110"
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    color: hero.color,
-                    opacity: 0.8,
-                    lineHeight: 1,
-                  }}
-                >
-                  {hero.symbol}
-                </div>
-
-                <div className="flex items-start justify-between mb-3">
+              <div className="p-4 md:p-6">
+                <div className="flex items-start justify-between mb-1">
                   <h3
                     style={{
                       fontFamily: "'Cormorant Garamond', serif",
                       fontWeight: 500,
-                      fontSize: "1.6rem",
+                      fontSize: "clamp(1.2rem, 4vw, 1.6rem)",
                       color: "var(--color-dark)",
                       lineHeight: 1.1,
                     }}
                   >
                     {hero.name}
                   </h3>
-                  <span className="text-xl">{hero.emoji}</span>
+                  <span className="text-lg">{hero.emoji}</span>
                 </div>
 
                 <p
-                  className="text-xs mb-4"
+                  className="mb-2"
                   style={{
                     fontFamily: "'Golos Text', sans-serif",
                     color: hero.color,
-                    letterSpacing: "0.15em",
+                    letterSpacing: "0.12em",
                     textTransform: "uppercase",
                     fontWeight: 400,
+                    fontSize: "0.65rem",
                   }}
                 >
                   {hero.state}
@@ -506,29 +551,29 @@ function HeroesSection() {
                   style={{
                     fontFamily: "'Golos Text', sans-serif",
                     fontWeight: 300,
-                    fontSize: "0.9rem",
+                    fontSize: "clamp(0.75rem, 2.5vw, 0.88rem)",
                     color: "rgba(28,21,16,0.65)",
-                    lineHeight: "1.7",
+                    lineHeight: "1.6",
                   }}
                 >
                   {hero.meaning}
                 </p>
 
                 <div
-                  className="mt-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  className="mt-4 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   style={{ color: "var(--color-gold)" }}
                 >
                   <span
                     style={{
                       fontFamily: "'Golos Text', sans-serif",
-                      fontSize: "0.75rem",
+                      fontSize: "0.7rem",
                       letterSpacing: "0.1em",
                       textTransform: "uppercase",
                     }}
                   >
-                    Выбрать героя
+                    Выбрать
                   </span>
-                  <Icon name="ArrowRight" size={14} />
+                  <Icon name="ArrowRight" size={12} />
                 </div>
               </div>
             </div>
@@ -548,7 +593,7 @@ function HeroesSection() {
 function FeaturesSection() {
   return (
     <section
-      className="py-32 px-6"
+      className="py-16 md:py-32 px-4 md:px-6"
       style={{ background: "rgba(139,107,74,0.06)" }}
     >
       <div className="max-w-6xl mx-auto">
@@ -604,7 +649,7 @@ function FeaturesSection() {
 function StorySection() {
   return (
     <section
-      className="relative py-32 px-6 overflow-hidden"
+      className="relative py-20 md:py-32 px-4 md:px-6 overflow-hidden"
       style={{ background: "var(--color-dark)" }}
     >
       <div
@@ -709,7 +754,7 @@ function FaqSection() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="py-32 px-6" style={{ background: "var(--color-milk)" }}>
+    <section id="faq" className="py-16 md:py-32 px-4 md:px-6" style={{ background: "var(--color-milk)" }}>
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-16">
           <p className="section-label reveal mb-4">Вопросы</p>
@@ -921,6 +966,35 @@ function Footer() {
   );
 }
 
+function MobileFloatBtn() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const handler = () => setVisible(window.scrollY > 300);
+    window.addEventListener("scroll", handler, { passive: true });
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  return (
+    <a
+      href="#heroes"
+      className="md:hidden fixed bottom-6 left-1/2 z-50 btn-primary rounded-full flex items-center gap-2"
+      style={{
+        transform: visible
+          ? "translateX(-50%) translateY(0)"
+          : "translateX(-50%) translateY(100px)",
+        transition: "transform 0.5s cubic-bezier(0.16,1,0.3,1)",
+        boxShadow: "0 8px 32px rgba(139,107,74,0.35)",
+        padding: "0.75rem 1.75rem",
+      }}
+    >
+      <span style={{ position: "relative", zIndex: 1, fontSize: "0.75rem", letterSpacing: "0.1em" }}>
+        Выбрать героя
+      </span>
+      <Icon name="ArrowRight" size={14} style={{ position: "relative", zIndex: 1, color: "var(--color-milk)" }} />
+    </a>
+  );
+}
+
 const Index = () => {
   useReveal();
 
@@ -932,6 +1006,7 @@ const Index = () => {
       <HeroesSection />
       <FeaturesSection />
       <StorySection />
+      <MobileFloatBtn />
       <FaqSection />
       <CtaSection />
       <Footer />

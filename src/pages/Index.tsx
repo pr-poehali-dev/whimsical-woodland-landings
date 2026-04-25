@@ -1,1017 +1,453 @@
-import { useEffect, useRef, useState } from "react";
-import Icon from "@/components/ui/icon";
-
-const HERO_BG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/files/1e6f1e85-4de1-4add-a18b-cdfb20b54e6f.jpg";
-const FIGURES_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/files/399b6811-f3df-4f77-812d-2fe6d059c927.jpg";
-const CRAFT_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/files/c596f571-2945-42a0-a21c-87e7ebf46f05.jpg";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Heart, Leaf, Flame, Wind, Droplets, Home, Sparkles, ShoppingBag, User, Search, Play, Star, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 // Real hero photos
-const LISTOROG_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/bucket/a3064c08-c90f-4d3a-aba1-76d4f5cf07fe.png";
-const DREVLIN_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/bucket/4825ce46-c1d4-422f-811e-269ae9bcf456.png";
 const EMIRO_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/bucket/035e76a2-8a75-4012-b786-6501103bbb95.png";
 const NERELIY_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/bucket/ea7a0815-d083-4f46-84b3-96c4fa65cdfb.png";
 const AREYA_IMG = "https://cdn.poehali.dev/projects/bcefdb1b-af34-4e7f-b67b-50f2c5278e95/bucket/c81c87b4-2625-4276-8fc0-4bad85f666e6.png";
 
 const heroes = [
-  { name: "Аэрея", state: "Свобода", meaning: "Приносит свободу мыслей", color: "#8BA3B0", emoji: "🌬️", symbol: "~", img: AREYA_IMG },
-  { name: "Листорог", state: "Опора", meaning: "Даёт опору и корни", color: "#7A8C6E", emoji: "🌿", symbol: "Ψ", img: LISTOROG_IMG },
-  { name: "Эмиро", state: "Любовь", meaning: "Открывает сердце", color: "#B87A8A", emoji: "💖", symbol: "♡", img: EMIRO_IMG },
-  { name: "Древлин", state: "Спокойствие", meaning: "Приносит тишину внутри", color: "#8B6B4A", emoji: "🪶", symbol: "∞", img: DREVLIN_IMG },
-  { name: "Нерелий", state: "Эмоции", meaning: "Успокаивает чувства", color: "#6B8BA3", emoji: "💧", symbol: "◯", img: NERELIY_IMG },
-  { name: "Игнитрис", state: "Энергия", meaning: "Возвращает внутренний огонь", color: "#C4963A", emoji: "🔥", symbol: "∆", img: null },
+  {
+    name: "Нерелий",
+    role: "Хранитель Потока",
+    price: "€49",
+    icon: Droplets,
+    need: "Когда внутри слишком много",
+    image: "💧",
+    photo: NERELIY_IMG,
+    color: "from-sky-200/30 to-blue-500/20",
+    story: "Помогает проживать эмоции мягко и отпускать лишнее.",
+  },
+  {
+    name: "Игнитрис",
+    role: "Хранитель Воли",
+    price: "€49",
+    icon: Flame,
+    need: "Когда нужен первый шаг",
+    image: "🔥",
+    photo: null,
+    color: "from-orange-200/30 to-amber-500/20",
+    story: "Зажигает внутреннюю искру и возвращает движение.",
+  },
+  {
+    name: "Листорог",
+    role: "Хранитель Роста",
+    price: "€49",
+    icon: Leaf,
+    need: "Когда нужны силы",
+    image: "🌿",
+    photo: null,
+    color: "from-green-200/30 to-emerald-600/20",
+    story: "Возвращает ресурс, устойчивость и ощущение роста.",
+  },
+  {
+    name: "Айрея",
+    role: "Хранитель Пространства",
+    price: "€49",
+    icon: Wind,
+    need: "Когда в голове шумно",
+    image: "🌬️",
+    photo: AREYA_IMG,
+    color: "from-cyan-100/30 to-slate-300/30",
+    story: "Приносит лёгкость, ясность и внутренний воздух.",
+  },
+  {
+    name: "Эмиро",
+    role: "Хранитель Сердца",
+    price: "€49",
+    icon: Heart,
+    need: "Когда хочется тепла",
+    image: "🤍",
+    photo: EMIRO_IMG,
+    color: "from-rose-100/40 to-pink-300/30",
+    story: "Помогает снова чувствовать, доверять и открываться.",
+  },
+  {
+    name: "Древлин",
+    role: "Хранитель Укрытия",
+    price: "€49",
+    icon: Home,
+    need: "Когда нужен покой",
+    image: "🌳",
+    photo: null,
+    color: "from-stone-200/30 to-lime-700/20",
+    story: "Создаёт ощущение дома, безопасности и опоры внутри.",
+  },
 ];
 
-const states = [
-  { name: "Спокойствие", hero: "Древлин", icon: "Moon", desc: "Найти тишину внутри" },
-  { name: "Энергия", hero: "Игнитрис", icon: "Flame", desc: "Разжечь внутренний огонь" },
-  { name: "Любовь", hero: "Эмиро", icon: "Heart", desc: "Открыть сердце миру" },
-  { name: "Эмоции", hero: "Нерелий", icon: "Waves", desc: "Прожить и отпустить" },
-  { name: "Опора", hero: "Листорог", icon: "TreePine", desc: "Найти свои корни" },
-  { name: "Свобода", hero: "Аэрея", icon: "Wind", desc: "Расправить внутренние крылья" },
+const quizOptions = [
+  { label: "Мне тревожно", hero: heroes[0] },
+  { label: "Я устал", hero: heroes[2] },
+  { label: "Мне тяжело", hero: heroes[5] },
+  { label: "Я запутался", hero: heroes[3] },
+  { label: "Я закрылся", hero: heroes[4] },
+  { label: "Мне нужна энергия", hero: heroes[1] },
 ];
 
-const features = [
-  { icon: "TreePine", label: "Натуральное дерево" },
-  { icon: "Hand", label: "Ручная работа" },
-  { icon: "Sparkles", label: "Каждая уникальна" },
-  { icon: "Star", label: "Коллекционная серия" },
-  { icon: "Heart", label: "Сделано со смыслом" },
-  { icon: "Package", label: "Премиальная упаковка" },
-  { icon: "Gift", label: "Подарок с эмоцией" },
-  { icon: "Shield", label: "Талисман рядом" },
-];
-
-const navLinks = [
-  { label: "Герои", href: "#heroes" },
-  { label: "Состояния", href: "#states" },
-  { label: "Магазин", href: "#shop" },
-  { label: "Доставка", href: "#delivery" },
-  { label: "Контакты", href: "#contacts" },
-];
-
-function useReveal() {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -60px 0px" }
-    );
-    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-}
-
-function ParticleField() {
-  const particles = Array.from({ length: 12 }, (_, i) => ({
-    id: i,
-    left: `${8 + i * 8}%`,
-    duration: `${7 + (i % 5)}s`,
-    delay: `${(i * 0.7) % 6}s`,
-    size: i % 3 === 0 ? 4 : i % 2 === 0 ? 2.5 : 3,
-  }));
-
+function SectionTitle({ eyebrow, title, text }: { eyebrow?: string; title: string; text?: string }) {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((p) => (
-        <div
-          key={p.id}
-          className="particle-dot"
-          style={{
-            left: p.left,
-            "--duration": p.duration,
-            "--delay": p.delay,
-            width: p.size,
-            height: p.size,
-          } as React.CSSProperties}
-        />
-      ))}
+    <div className="mx-auto max-w-3xl text-center">
+      {eyebrow && <p className="mb-3 text-xs uppercase tracking-[0.35em] text-[#b8945f]">{eyebrow}</p>}
+      <h2 className="font-serif text-4xl text-[#36291d] md:text-6xl">{title}</h2>
+      {text && <p className="mt-5 text-base leading-8 text-[#6f6254] md:text-lg">{text}</p>}
     </div>
   );
 }
 
-function Nav() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", handler);
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
-
+function HeroToy({ hero, className = "", delay = 0 }: { hero: (typeof heroes)[0]; className?: string; delay?: number }) {
   return (
-    <nav
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
-      style={{
-        background: scrolled
-          ? "rgba(245,240,232,0.92)"
-          : "transparent",
-        backdropFilter: scrolled ? "blur(20px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(212,184,150,0.3)" : "none",
-      }}
+    <motion.div
+      initial={{ opacity: 0, y: 22 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.8 }}
+      className={`relative flex aspect-[3/4] items-center justify-center overflow-hidden rounded-[2.5rem] border border-white/10 shadow-2xl ${className}`}
+      style={{ background: "linear-gradient(135deg, #b8793a, #6c3d1f)" }}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 py-5 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-3">
-          <span
-            className="text-2xl tracking-widest"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, color: "var(--color-dark)" }}
-          >
-            LIS<span style={{ color: "var(--color-gold)" }}>KIDS</span>
-          </span>
-        </a>
-
-        <div className="hidden md:flex items-center gap-10">
-          {navLinks.map((link) => (
-            <a key={link.label} href={link.href} className="nav-link">
-              {link.label}
-            </a>
-          ))}
-        </div>
-
-        <a href="#shop" className="hidden md:block btn-primary rounded-none text-xs">
-          <span>Магазин</span>
-        </a>
-
-        <button
-          className="md:hidden p-2"
-          onClick={() => setMenuOpen(!menuOpen)}
-          style={{ color: "var(--color-dark)" }}
-        >
-          <Icon name={menuOpen ? "X" : "Menu"} size={22} />
-        </button>
-      </div>
-
-      {menuOpen && (
-        <div
-          className="md:hidden px-6 pb-6 pt-2 flex flex-col gap-5"
-          style={{ background: "rgba(245,240,232,0.97)" }}
-        >
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="nav-link"
-              onClick={() => setMenuOpen(false)}
-            >
-              {link.label}
-            </a>
-          ))}
-          <a href="#shop" className="btn-primary rounded-none text-xs text-center mt-2">
-            <span>Магазин</span>
-          </a>
-        </div>
+      <div className="absolute inset-2 rounded-[2rem] bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,.22),transparent_30%),repeating-linear-gradient(110deg,rgba(255,255,255,.1)_0_1px,transparent_1px_10px)] opacity-60" />
+      {hero.photo ? (
+        <img
+          src={hero.photo}
+          alt={hero.name}
+          className="z-10 h-full w-full object-contain p-3 drop-shadow-2xl"
+        />
+      ) : (
+        <div className="z-10 text-6xl drop-shadow-lg md:text-7xl">{hero.image}</div>
       )}
-    </nav>
+      <div className="absolute bottom-5 h-3 w-1/2 rounded-full bg-black/25 blur-md" />
+    </motion.div>
   );
 }
 
-function HeroSection() {
-  const [loaded, setLoaded] = useState(false);
-  const parallaxRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setLoaded(true);
-    const handler = () => {
-      if (parallaxRef.current) {
-        const y = window.scrollY * 0.4;
-        parallaxRef.current.style.transform = `translateY(${y}px)`;
-      }
-    };
-    window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
+export default function Index() {
+  const [selected, setSelected] = useState(heroes[0]);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* BG with parallax */}
-      <div
-        ref={parallaxRef}
-        className="absolute inset-0 scale-110"
-        style={{
-          backgroundImage: `url(${HERO_BG})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      />
-
-      {/* Gradient overlays */}
-      <div className="absolute inset-0 hero-overlay" />
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse at 50% 0%, rgba(196,150,58,0.12) 0%, transparent 60%)",
-        }}
-      />
-
-      {/* Light rays */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[15, 30, 50, 70, 85].map((x, i) => (
-          <div
-            key={i}
-            className="absolute top-0"
-            style={{
-              left: `${x}%`,
-              width: "1px",
-              height: "70%",
-              background: `linear-gradient(180deg, rgba(255,220,100,${0.15 - i * 0.02}) 0%, transparent 100%)`,
-              transform: `rotate(${-5 + i * 3}deg)`,
-              transformOrigin: "top center",
-              filter: "blur(8px)",
-            }}
-          />
-        ))}
+    <main className="min-h-screen overflow-hidden bg-[#f5efe4] text-[#34271e]">
+      {/* NAV */}
+      <div className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#11150f]/70 backdrop-blur-xl">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 text-[#f6ead5]">
+          <div className="font-serif text-2xl leading-none tracking-widest">LITTLE<br />SPIRITS</div>
+          <div className="hidden items-center gap-8 text-sm text-[#f0ddbd] md:flex">
+            <a href="#collection" className="cursor-pointer hover:text-white transition-colors">Коллекция</a>
+            <a href="#about" className="cursor-pointer hover:text-white transition-colors">О мире</a>
+            <a href="#quiz" className="cursor-pointer hover:text-white transition-colors">Найти героя</a>
+            <a href="#reviews" className="cursor-pointer hover:text-white transition-colors">Отзывы</a>
+          </div>
+          <div className="flex items-center gap-3 md:gap-4">
+            <Search size={18} className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity" />
+            <User size={18} className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity hidden sm:block" />
+            <ShoppingBag size={18} className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity" />
+            <Button className="rounded-full bg-[#ead9bd] px-4 py-2 text-xs text-[#2d241b] hover:bg-white sm:px-6 sm:text-sm">
+              Найти героя
+            </Button>
+          </div>
+        </nav>
       </div>
 
-      <ParticleField />
+      {/* HERO */}
+      <section className="relative min-h-screen bg-[#10140e] pt-28 text-[#f8ecd7]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,rgba(255,196,103,.35),transparent_20%),radial-gradient(circle_at_70%_35%,rgba(98,131,77,.25),transparent_30%),linear-gradient(to_bottom,rgba(0,0,0,.1),#10140e_90%)]" />
+        <div className="absolute inset-0 opacity-25 bg-[repeating-linear-gradient(90deg,transparent_0_80px,rgba(255,255,255,.04)_80px_81px)]" />
+        <div className="relative mx-auto grid max-w-7xl gap-10 px-5 pb-20 pt-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+          <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.9 }}>
+            <p className="mb-6 text-sm uppercase tracking-[0.35em] text-[#d9bc85]">маленькие хранители</p>
+            <h1 className="font-serif text-5xl leading-[0.95] md:text-7xl lg:text-8xl">У каждого есть свой хранитель</h1>
+            <p className="mt-6 max-w-lg text-base leading-8 text-[#e0d1bb] md:mt-8 md:text-lg">
+              Little Spirits — первая встреча ребёнка со своим внутренним миром и красивое напоминание взрослому о себе настоящем.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-4 md:mt-10">
+              <Button className="rounded-full bg-[#ead9bd] px-6 py-5 text-[#2d241b] hover:bg-white md:px-8 md:py-6">
+                Найти своего героя
+              </Button>
+              <Button variant="outline" className="rounded-full border-[#d7bd8d]/50 bg-transparent px-6 py-5 text-[#ead9bd] hover:bg-white/10 md:px-8 md:py-6">
+                Смотреть коллекцию
+              </Button>
+            </div>
+          </motion.div>
 
-      {/* Content */}
-      <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-        <p
-          className="section-label mb-8"
-          style={{
-            opacity: loaded ? 1 : 0,
-            transform: loaded ? "translateY(0)" : "translateY(20px)",
-            transition: "all 1s ease 0.2s",
-          }}
-        >
-          Деревянные фигурки со смыслом
-        </p>
-
-        <h1
-          className="leading-none mb-6 md:mb-8"
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontWeight: 300,
-            fontSize: "clamp(3rem, 12vw, 8rem)",
-            color: "var(--color-dark)",
-            opacity: loaded ? 1 : 0,
-            transform: loaded ? "translateY(0)" : "translateY(30px)",
-            transition: "all 1.1s cubic-bezier(0.16,1,0.3,1) 0.4s",
-            letterSpacing: "-0.02em",
-          }}
-        >
-          Хранители<br />
-          <em style={{ color: "var(--color-wood)", fontStyle: "italic" }}>внутреннего мира</em>
-        </h1>
-
-        <p
-          className="max-w-xl mx-auto mb-10 md:mb-12 leading-relaxed"
-          style={{ fontSize: "clamp(0.95rem, 3vw, 1.2rem)" }}
-          style={{
-            fontFamily: "'Golos Text', sans-serif",
-            fontWeight: 300,
-            color: "rgba(28,21,16,0.7)",
-            opacity: loaded ? 1 : 0,
-            transform: loaded ? "translateY(0)" : "translateY(20px)",
-            transition: "all 1s ease 0.7s",
-          }}
-        >
-          Деревянные фигурки, которые помогают чувствовать себя,
-          находить опору и вдохновение.
-        </p>
-
-        <div
-          className="flex flex-col sm:flex-row gap-4 justify-center"
-          style={{
-            opacity: loaded ? 1 : 0,
-            transform: loaded ? "translateY(0)" : "translateY(20px)",
-            transition: "all 1s ease 1s",
-          }}
-        >
-          <a href="#heroes" className="btn-primary rounded-none">
-            <span>Выбрать своего героя</span>
-          </a>
-          <a href="#states" className="btn-outline rounded-none">
-            Найти своё состояние
-          </a>
+          <div className="relative h-[440px] md:h-[560px] lg:h-[620px]">
+            <div className="absolute inset-x-0 bottom-0 h-44 rounded-[50%] bg-[#4a371e]/70 blur-2xl" />
+            <HeroToy hero={heroes[1]} delay={0.1} className="absolute left-[3%] top-[18%] h-52 w-36 rotate-[-3deg] md:h-72 md:w-44" />
+            <HeroToy hero={heroes[2]} delay={0.2} className="absolute left-[27%] top-[4%] h-64 w-44 md:h-96 md:w-56" />
+            <HeroToy hero={heroes[3]} delay={0.3} className="absolute right-[7%] top-[10%] h-56 w-36 rotate-[3deg] md:h-80 md:w-48" />
+            <HeroToy hero={heroes[5]} delay={0.4} className="absolute bottom-[4%] left-[2%] h-52 w-36 md:h-72 md:w-44" />
+            <HeroToy hero={heroes[0]} delay={0.5} className="absolute bottom-0 left-[34%] h-48 w-36 md:h-64 md:w-48" />
+            <HeroToy hero={heroes[4]} delay={0.6} className="absolute bottom-[2%] right-[8%] h-52 w-36 md:h-72 md:w-44" />
+          </div>
         </div>
+      </section>
 
-        {/* Figures image */}
-        <div
-          className="mt-16 relative inline-block"
-          style={{
-            opacity: loaded ? 1 : 0,
-            transform: loaded ? "translateY(0)" : "translateY(40px)",
-            transition: "all 1.3s cubic-bezier(0.16,1,0.3,1) 1.2s",
-          }}
-        >
-          <img
-            src={FIGURES_IMG}
-            alt="Деревянные хранители LISKIDS"
-            className="w-full max-w-2xl mx-auto rounded-none"
-            style={{
-              maskImage: "linear-gradient(180deg, black 60%, transparent 100%)",
-              WebkitMaskImage: "linear-gradient(180deg, black 60%, transparent 100%)",
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background: "radial-gradient(ellipse at 50% 100%, rgba(196,150,58,0.15) 0%, transparent 70%)",
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        style={{
-          opacity: loaded ? 0.5 : 0,
-          transition: "opacity 1s ease 2s",
-        }}
-      >
-        <span className="section-label" style={{ fontSize: "0.6rem" }}>
-          прокрутить
-        </span>
-        <div
-          className="w-px h-12"
-          style={{
-            background: "linear-gradient(180deg, var(--color-gold), transparent)",
-            animation: "float 2s ease-in-out infinite",
-          }}
-        />
-      </div>
-    </section>
-  );
-}
-
-function StatesSection() {
-  const [active, setActive] = useState(0);
-
-  return (
-    <section id="states" className="py-16 md:py-32 px-4 md:px-6" style={{ background: "var(--color-milk)" }}>
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <p className="section-label reveal mb-4">Твоё состояние</p>
-          <h2
-            className="text-5xl md:text-7xl reveal reveal-delay-2"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, color: "var(--color-dark)" }}
-          >
-            Выбери своё
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-          {states.map((s, i) => (
-            <button
-              key={s.name}
-              onClick={() => setActive(i)}
-              className={`reveal reveal-delay-${i + 1} p-5 md:p-8 text-left transition-all duration-500 group`}
-              style={{
-                background: active === i
-                  ? "linear-gradient(135deg, var(--color-wood), var(--color-gold))"
-                  : "rgba(212,184,150,0.15)",
-                border: active === i
-                  ? "1px solid transparent"
-                  : "1px solid rgba(212,184,150,0.3)",
-                color: active === i ? "var(--color-milk)" : "var(--color-dark)",
-                transform: active === i ? "scale(1.02)" : "scale(1)",
-              }}
-            >
-              <div className="mb-4">
-                <Icon
-                  name={s.icon}
-                  size={28}
-                  style={{ color: active === i ? "rgba(245,240,232,0.8)" : "var(--color-gold)" }}
-                />
+      {/* ABOUT CHILDREN */}
+      <section id="about" className="relative bg-[#10140e] px-5 py-16 text-[#f6ead5] md:py-20">
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <Card className="overflow-hidden rounded-[2rem] border-0 bg-[#2b261e] shadow-2xl">
+            <div className="h-full bg-[radial-gradient(circle_at_50%_20%,rgba(255,215,150,.45),transparent_20%),linear-gradient(135deg,#3b2a1d,#12150f)] p-6 md:p-8">
+              <div className="flex min-h-[280px] items-center justify-center rounded-[1.5rem] border border-[#e8d4ad]/20 bg-black/20 gap-4 md:min-h-[360px]">
+                <img src={EMIRO_IMG} alt="Эмиро" className="h-36 w-28 object-contain drop-shadow-2xl md:h-52 md:w-40" />
+                <img src={NERELIY_IMG} alt="Нерелий" className="h-36 w-28 -mt-6 object-contain drop-shadow-2xl md:h-52 md:w-40" />
               </div>
-              <h3
-                className="text-xl mb-1"
-                style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 500, fontSize: "1.5rem" }}
-              >
-                {s.name}
-              </h3>
-              <p
-                className="text-sm mt-1"
-                style={{
-                  fontFamily: "'Golos Text', sans-serif",
-                  fontWeight: 300,
-                  opacity: 0.7,
-                  fontSize: "0.8rem",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                {s.desc}
-              </p>
-              <p
-                className="text-xs mt-3"
-                style={{
-                  fontFamily: "'Golos Text', sans-serif",
-                  opacity: active === i ? 0.9 : 0.5,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  fontSize: "0.65rem",
-                }}
-              >
-                → {s.hero}
-              </p>
-            </button>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function HeroesSection() {
-  return (
-    <section
-      id="heroes"
-      className="py-16 md:py-32 px-4 md:px-6"
-      style={{
-        background: "linear-gradient(180deg, var(--color-milk) 0%, rgba(139,107,74,0.08) 100%)",
-      }}
-    >
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-20">
-          <p className="section-label reveal mb-4">Коллекция</p>
-          <h2
-            className="text-5xl md:text-7xl reveal reveal-delay-2"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
-          >
-            Шесть хранителей
-          </h2>
-          <p
-            className="mt-6 text-base max-w-lg mx-auto reveal reveal-delay-3"
-            style={{
-              fontFamily: "'Golos Text', sans-serif",
-              fontWeight: 300,
-              color: "rgba(28,21,16,0.6)",
-              lineHeight: "1.8",
-            }}
-          >
-            Каждый герой несёт в себе особую силу — состояние, которое
-            может стать твоим внутренним ориентиром.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
-          {heroes.map((hero, i) => (
-            <div
-              key={hero.name}
-              className={`reveal reveal-delay-${(i % 3) + 1} card-hover group cursor-pointer overflow-hidden`}
-              style={{
-                background: "rgba(245,240,232,0.85)",
-                border: "1px solid rgba(212,184,150,0.3)",
-                backdropFilter: "blur(10px)",
-              }}
-            >
-              {/* Hero photo */}
-              <div
-                className="relative overflow-hidden"
-                style={{
-                  background: `linear-gradient(135deg, rgba(245,240,232,1) 0%, ${hero.color}18 100%)`,
-                  minHeight: "200px",
-                }}
-              >
-                {hero.img ? (
-                  <img
-                    src={hero.img}
-                    alt={hero.name}
-                    className="w-full transition-transform duration-700 group-hover:scale-105"
-                    style={{
-                      objectFit: "contain",
-                      maxHeight: "220px",
-                      padding: "1rem 1rem 0",
-                      display: "block",
-                      margin: "0 auto",
-                    }}
-                  />
-                ) : (
-                  <div
-                    className="flex items-center justify-center"
-                    style={{ minHeight: "200px" }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: "'Cormorant Garamond', serif",
-                        fontSize: "5rem",
-                        color: hero.color,
-                        opacity: 0.4,
-                        lineHeight: 1,
-                      }}
-                    >
-                      {hero.symbol}
-                    </span>
-                  </div>
-                )}
-                {/* Color accent */}
-                <div
-                  className="absolute bottom-0 left-0 right-0 h-8"
-                  style={{
-                    background: `linear-gradient(180deg, transparent, ${hero.color}20)`,
-                  }}
-                />
+            </div>
+          </Card>
+          <div className="rounded-[2rem] border border-[#e5d1aa]/15 bg-[#1b1d16]/90 p-7 md:p-14">
+            <h2 className="font-serif text-3xl leading-tight md:text-5xl lg:text-6xl">Ребёнок чувствует раньше, чем умеет объяснить</h2>
+            <div className="mt-8 grid gap-8 md:mt-10 md:grid-cols-2">
+              <div>
+                <p className="mb-4 text-[#bda984]">Иногда он не может сказать:</p>
+                {["Мне тревожно", "Мне грустно", "Мне страшно", "Мне нужна поддержка"].map((x) => (
+                  <p key={x} className="mb-3 flex items-center gap-3 text-[#ead9bd]">
+                    <Sparkles size={16} className="shrink-0" />{x}
+                  </p>
+                ))}
               </div>
-
-              {/* Color stripe */}
-              <div
-                className="h-0.5 w-full"
-                style={{ background: `linear-gradient(90deg, ${hero.color}, transparent)` }}
-              />
-
-              <div className="p-4 md:p-6">
-                <div className="flex items-start justify-between mb-1">
-                  <h3
-                    style={{
-                      fontFamily: "'Cormorant Garamond', serif",
-                      fontWeight: 500,
-                      fontSize: "clamp(1.2rem, 4vw, 1.6rem)",
-                      color: "var(--color-dark)",
-                      lineHeight: 1.1,
-                    }}
-                  >
-                    {hero.name}
-                  </h3>
-                  <span className="text-lg">{hero.emoji}</span>
+              <div className="border-t border-[#e5d1aa]/20 pt-6 md:border-l md:border-t-0 md:pl-8 md:pt-0">
+                <p className="mb-4 text-[#bda984]">Но он может сказать:</p>
+                <div className="rounded-2xl border border-[#d6ba85]/30 bg-[#ead9bd]/10 p-4 text-lg md:p-5 md:text-xl">
+                  Сегодня мне нужен Нерелий
                 </div>
+                <p className="mt-4 leading-7 text-[#d5c4aa] md:mt-5">Маленькие хранители помогают говорить о чувствах через игру.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-                <p
-                  className="mb-2"
-                  style={{
-                    fontFamily: "'Golos Text', sans-serif",
-                    color: hero.color,
-                    letterSpacing: "0.12em",
-                    textTransform: "uppercase",
-                    fontWeight: 400,
-                    fontSize: "0.65rem",
-                  }}
-                >
-                  {hero.state}
-                </p>
-
-                <p
-                  style={{
-                    fontFamily: "'Golos Text', sans-serif",
-                    fontWeight: 300,
-                    fontSize: "clamp(0.75rem, 2.5vw, 0.88rem)",
-                    color: "rgba(28,21,16,0.65)",
-                    lineHeight: "1.6",
-                  }}
-                >
-                  {hero.meaning}
-                </p>
-
-                <div
-                  className="mt-4 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{ color: "var(--color-gold)" }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "'Golos Text', sans-serif",
-                      fontSize: "0.7rem",
-                      letterSpacing: "0.1em",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Выбрать
-                  </span>
-                  <Icon name="ArrowRight" size={12} />
+      {/* HOW IT WORKS */}
+      <section className="bg-[#efe1ca] px-5 py-16 md:py-20">
+        <SectionTitle title="Как это работает" />
+        <div className="mx-auto mt-10 grid max-w-6xl gap-5 md:mt-12 md:grid-cols-3">
+          {([
+            ["1. Выбери героя", "Интуитивно, по состоянию или по знаку зодиака.", Heart],
+            ["2. Играй и проживай", "Через персонажа чувства становятся понятнее и безопаснее.", Play],
+            ["3. Расти вместе", "Герои становятся частью важных разговоров дома.", Leaf],
+          ] as const).map(([title, text, IconComp]) => (
+            <Card key={title} className="rounded-[2rem] border-0 bg-[#f8f0e2]/80 p-7 shadow-sm md:p-8">
+              <CardContent className="p-0 text-center">
+                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-[#b8945f]/30 text-[#8a7048] md:mb-6 md:h-16 md:w-16">
+                  <IconComp />
                 </div>
-              </div>
-            </div>
+                <h3 className="font-serif text-xl md:text-2xl">{title}</h3>
+                <p className="mt-3 leading-7 text-[#756856] md:mt-4">{text}</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
+      </section>
 
-        <div className="text-center mt-16 reveal">
-          <a href="#shop" className="btn-primary rounded-none inline-block">
-            <span>Перейти в магазин</span>
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FeaturesSection() {
-  return (
-    <section
-      className="py-16 md:py-32 px-4 md:px-6"
-      style={{ background: "rgba(139,107,74,0.06)" }}
-    >
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-20">
-          <p className="section-label reveal mb-4">Качество</p>
-          <h2
-            className="text-5xl md:text-6xl reveal reveal-delay-2"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
-          >
-            Почему нас выбирают
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {features.map((f, i) => (
-            <div
-              key={f.label}
-              className={`reveal reveal-delay-${(i % 4) + 1} group text-center p-8 transition-all duration-500 hover:-translate-y-2`}
-              style={{
-                background: "rgba(245,240,232,0.6)",
-                border: "1px solid rgba(212,184,150,0.25)",
-              }}
-            >
-              <div
-                className="mx-auto mb-5 w-12 h-12 flex items-center justify-center transition-all duration-500 group-hover:scale-110"
-                style={{
-                  background: "linear-gradient(135deg, rgba(196,150,58,0.15), rgba(139,107,74,0.1))",
-                  border: "1px solid rgba(196,150,58,0.2)",
-                  borderRadius: "50%",
-                }}
-              >
-                <Icon name={f.icon} size={20} style={{ color: "var(--color-gold)" }} />
-              </div>
-              <p
-                style={{
-                  fontFamily: "'Golos Text', sans-serif",
-                  fontWeight: 400,
-                  fontSize: "0.85rem",
-                  color: "var(--color-dark)",
-                  lineHeight: "1.5",
-                }}
-              >
-                {f.label}
-              </p>
+      {/* COLLECTION */}
+      <section id="collection" className="bg-[#10140e] px-5 py-16 text-[#f8ecd7] md:py-24">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-4 md:mb-10">
+            <div>
+              <p className="mb-3 text-xs uppercase tracking-[0.35em] text-[#b8945f]">коллекция</p>
+              <h2 className="font-serif text-4xl md:text-5xl">Коллекция хранителей</h2>
             </div>
-          ))}
+            <Button variant="outline" className="rounded-full border-[#d7bd8d]/40 bg-transparent text-[#ead9bd] hover:bg-white/10">
+              Смотреть всех
+            </Button>
+          </div>
+          <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-6 md:gap-5">
+            {heroes.map((h) => {
+              const IconComp = h.icon;
+              return (
+                <motion.div key={h.name} whileHover={{ y: -8 }}>
+                  <Card className="overflow-hidden rounded-[1.7rem] border border-[#e5d1aa]/10 bg-[#181a14] text-[#f8ecd7] shadow-xl">
+                    <div className={`relative flex items-end justify-center bg-gradient-to-br ${h.color}`} style={{ minHeight: "13rem" }}>
+                      {h.photo ? (
+                        <img
+                          src={h.photo}
+                          alt={h.name}
+                          className="h-52 w-full object-contain pt-3"
+                        />
+                      ) : (
+                        <div className="flex h-52 w-full items-center justify-center text-6xl md:text-7xl">{h.image}</div>
+                      )}
+                    </div>
+                    <CardContent className="p-4 md:p-5">
+                      <IconComp size={17} className="mb-2 text-[#c59d5f] md:mb-3 md:size-5" />
+                      <h3 className="font-serif text-lg md:text-2xl">{h.name}</h3>
+                      <p className="text-xs text-[#c7b79a]">{h.role}</p>
+                      <p className="mt-2 min-h-10 text-xs leading-5 text-[#e3d4bc] md:mt-3 md:min-h-12 md:leading-6">{h.need}</p>
+                      <div className="mt-3 flex items-center justify-between md:mt-5">
+                        <span className="text-sm md:text-base">{h.price}</span>
+                        <Button size="icon" className="h-7 w-7 rounded-full bg-[#d7bd8d] text-[#21170f] hover:bg-white md:h-9 md:w-9">+</Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
-      </div>
-    </section>
-  );
-}
+      </section>
 
-function StorySection() {
-  return (
-    <section
-      className="relative py-20 md:py-32 px-4 md:px-6 overflow-hidden"
-      style={{ background: "var(--color-dark)" }}
-    >
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `url(${CRAFT_IMG})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          opacity: 0.25,
-        }}
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background: "linear-gradient(135deg, rgba(28,21,16,0.85) 0%, rgba(28,21,16,0.6) 50%, rgba(28,21,16,0.85) 100%)",
-        }}
-      />
-
-      <ParticleField />
-
-      <div className="relative z-10 max-w-3xl mx-auto text-center">
-        <p className="section-label reveal mb-6" style={{ color: "var(--color-gold)" }}>
-          История бренда
-        </p>
-        <h2
-          className="text-5xl md:text-7xl mb-10 reveal reveal-delay-2"
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontWeight: 300,
-            color: "var(--color-milk)",
-            lineHeight: "1.1",
-          }}
-        >
-          Каждая фигурка
-          <em className="block" style={{ color: "var(--color-sand)", fontStyle: "italic" }}>
-            рождается вручную
-          </em>
-        </h2>
-
-        <p
-          className="text-lg leading-relaxed mb-12 reveal reveal-delay-3"
-          style={{
-            fontFamily: "'Golos Text', sans-serif",
-            fontWeight: 300,
-            color: "rgba(245,240,232,0.75)",
-            lineHeight: "1.9",
-          }}
-        >
-          Мы вкладываем в дерево заботу, тепло и смысл, чтобы герой стал
-          твоим личным талисманом — маленьким хранителем, который всегда
-          рядом.
-        </p>
-
-        <div
-          className="flex flex-col sm:flex-row gap-6 justify-center items-center reveal reveal-delay-4"
-        >
-          {[
-            { value: "6", label: "уникальных героев" },
-            { value: "100%", label: "ручная работа" },
-            { value: "∞", label: "смысл внутри" },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center px-8">
-              <div
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "3rem",
-                  fontWeight: 300,
-                  color: "var(--color-gold)",
-                  lineHeight: 1,
-                }}
-              >
-                {stat.value}
-              </div>
-              <div
-                style={{
-                  fontFamily: "'Golos Text', sans-serif",
-                  fontSize: "0.75rem",
-                  color: "rgba(245,240,232,0.5)",
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  marginTop: "0.5rem",
-                }}
-              >
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FaqSection() {
-  const faqs = [
-    { q: "Из какого дерева сделаны фигурки?", a: "Мы используем экологичное липовое и берёзовое дерево. Каждая фигурка обработана натуральными маслами." },
-    { q: "Сколько времени занимает создание?", a: "Один герой создаётся от 3 до 7 дней. Это полностью ручная работа — от заготовки до финальной обработки." },
-    { q: "Как происходит доставка?", a: "Доставляем по всей России. Каждая фигурка упакована в премиальную подарочную коробку с описанием героя." },
-    { q: "Можно ли заказать персональную фигурку?", a: "Да! Мы делаем персональные заказы с индивидуальным символом и смыслом. Напишите нам для обсуждения деталей." },
-  ];
-
-  const [open, setOpen] = useState<number | null>(null);
-
-  return (
-    <section id="faq" className="py-16 md:py-32 px-4 md:px-6" style={{ background: "var(--color-milk)" }}>
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-16">
-          <p className="section-label reveal mb-4">Вопросы</p>
-          <h2
-            className="text-5xl md:text-6xl reveal reveal-delay-2"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
-          >
-            FAQ
-          </h2>
-        </div>
-
-        <div className="space-y-px">
-          {faqs.map((faq, i) => (
-            <div
-              key={i}
-              className={`reveal reveal-delay-${i + 1}`}
-              style={{ borderBottom: "1px solid rgba(212,184,150,0.3)" }}
-            >
-              <button
-                className="w-full text-left py-7 flex items-center justify-between gap-4 group"
-                onClick={() => setOpen(open === i ? null : i)}
-              >
-                <span
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "1.2rem",
-                    fontWeight: 400,
-                    color: "var(--color-dark)",
-                  }}
-                >
-                  {faq.q}
-                </span>
-                <Icon
-                  name={open === i ? "Minus" : "Plus"}
-                  size={18}
-                  style={{
-                    color: "var(--color-gold)",
-                    flexShrink: 0,
-                    transition: "transform 0.3s ease",
-                    transform: open === i ? "rotate(180deg)" : "rotate(0deg)",
-                  }}
-                />
-              </button>
-              <div
-                style={{
-                  maxHeight: open === i ? "200px" : "0",
-                  overflow: "hidden",
-                  transition: "max-height 0.4s cubic-bezier(0.16,1,0.3,1)",
-                }}
-              >
-                <p
-                  className="pb-7"
-                  style={{
-                    fontFamily: "'Golos Text', sans-serif",
-                    fontWeight: 300,
-                    fontSize: "0.95rem",
-                    color: "rgba(28,21,16,0.65)",
-                    lineHeight: "1.8",
-                  }}
-                >
-                  {faq.a}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function CtaSection() {
-  return (
-    <section
-      className="relative py-40 px-6 overflow-hidden"
-      id="shop"
-    >
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `url(${HERO_BG})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center 40%",
-          filter: "brightness(0.4) saturate(0.8)",
-        }}
-      />
-      <div
-        className="absolute inset-0"
-        style={{
-          background: "radial-gradient(ellipse at center, rgba(196,150,58,0.1) 0%, rgba(28,21,16,0.6) 70%)",
-        }}
-      />
-
-      <ParticleField />
-
-      <div className="relative z-10 text-center max-w-2xl mx-auto">
-        <p className="section-label reveal mb-6" style={{ color: "var(--color-gold)" }}>
-          Найди своего
-        </p>
-        <h2
-          className="text-5xl md:text-7xl mb-8 reveal reveal-delay-2"
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontWeight: 300,
-            color: "var(--color-milk)",
-            lineHeight: "1.1",
-          }}
-        >
-          Какой хранитель
-          <em className="block" style={{ fontStyle: "italic", color: "var(--color-sand)" }}>
-            нужен тебе сегодня?
-          </em>
-        </h2>
-
-        <p
-          className="mb-12 reveal reveal-delay-3"
-          style={{
-            fontFamily: "'Golos Text', sans-serif",
-            fontWeight: 300,
-            color: "rgba(245,240,232,0.7)",
-            fontSize: "1rem",
-            lineHeight: "1.8",
-          }}
-        >
-          Каждый герой ждёт именно тебя.
-        </p>
-
-        <div className="reveal reveal-delay-4">
-          <a href="#heroes" className="btn-primary rounded-none inline-block text-sm">
-            <span>Выбрать героя</span>
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Footer() {
-  return (
-    <footer
-      className="py-16 px-6"
-      style={{
-        background: "var(--color-dark)",
-        borderTop: "1px solid rgba(212,184,150,0.1)",
-      }}
-    >
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+      {/* QUIZ */}
+      <section id="quiz" className="relative bg-[#e8dcc9] px-5 py-16 md:py-24">
+        <div className="absolute inset-0 opacity-50 bg-[radial-gradient(circle_at_20%_40%,rgba(121,154,177,.35),transparent_25%),radial-gradient(circle_at_90%_20%,rgba(255,255,255,.8),transparent_22%)]" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1fr_0.8fr]">
           <div>
-            <span
-              className="text-2xl tracking-widest"
-              style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300, color: "var(--color-milk)" }}
-            >
-              LIS<span style={{ color: "var(--color-gold)" }}>KIDS</span>
-            </span>
-            <p
-              className="mt-2"
-              style={{
-                fontFamily: "'Golos Text', sans-serif",
-                fontSize: "0.75rem",
-                color: "rgba(245,240,232,0.35)",
-                letterSpacing: "0.1em",
-              }}
-            >
-              Хранители внутреннего мира
-            </p>
+            <h2 className="font-serif text-4xl md:text-5xl">Какой герой нужен тебе сейчас?</h2>
+            <p className="mt-4 text-[#6f6254]">Выбери то, что чувствуешь прямо сейчас.</p>
+            <div className="mt-7 grid gap-3 grid-cols-2 md:mt-8 md:grid-cols-3">
+              {quizOptions.map((o) => (
+                <button
+                  key={o.label}
+                  onClick={() => setSelected(o.hero)}
+                  className="rounded-full border border-[#b8a17d]/30 bg-white/55 px-4 py-3 text-sm shadow-sm transition hover:bg-white active:scale-95"
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
           </div>
-
-          <div className="flex gap-8">
-            {[
-              { label: "Instagram", icon: "Instagram" },
-              { label: "Telegram", icon: "Send" },
-              { label: "ВКонтакте", icon: "MessageCircle" },
-            ].map((s) => (
-              <a
-                key={s.label}
-                href="#contacts"
-                className="flex flex-col items-center gap-2 transition-all duration-300 hover:-translate-y-1"
-                style={{ color: "rgba(245,240,232,0.4)" }}
+          <Card className="rounded-[2rem] border-0 bg-white/65 p-6 shadow-xl backdrop-blur-md md:p-8">
+            <CardContent className="p-0">
+              <div
+                className="mx-auto flex h-60 w-40 items-center justify-center overflow-hidden rounded-[2rem] shadow-2xl md:h-72 md:w-52"
+                style={{ background: "linear-gradient(135deg, #c89155, #6d4223)" }}
               >
-                <Icon
-                  name={s.icon}
-                  size={18}
-                  style={{ transition: "color 0.3s ease" }}
-                  className="hover:text-gold"
-                />
-                <span style={{ fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                  {s.label}
-                </span>
-              </a>
-            ))}
-          </div>
+                {selected.photo ? (
+                  <img src={selected.photo} alt={selected.name} className="h-full w-full object-contain" />
+                ) : (
+                  <span className="text-8xl">{selected.image}</span>
+                )}
+              </div>
+              <p className="mt-5 text-sm uppercase tracking-[0.25em] text-[#92744d] md:mt-6">Твой герой</p>
+              <h3 className="mt-2 font-serif text-3xl md:text-4xl">{selected.name}</h3>
+              <p className="mt-2 text-[#675b4b]">{selected.role}</p>
+              <p className="mt-3 leading-7 text-[#675b4b] md:mt-4">{selected.story}</p>
+              <Button className="mt-5 rounded-full bg-[#596441] px-7 text-white hover:bg-[#414a2e] md:mt-6">
+                Познакомиться
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
-          <div id="contacts">
-            <p
-              style={{
-                fontFamily: "'Golos Text', sans-serif",
-                fontSize: "0.75rem",
-                color: "rgba(245,240,232,0.3)",
-                letterSpacing: "0.05em",
-              }}
-            >
-              © 2025 LISKIDS. Все права защищены.
+      {/* MEANING */}
+      <section className="bg-[#f7efe3] px-5 py-16 md:py-24">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2 lg:items-center">
+          <div className="rounded-[2rem] bg-[linear-gradient(135deg,#2d3425,#a67845)] p-3 shadow-2xl">
+            <div className="flex min-h-[280px] items-center justify-center gap-2 rounded-[1.6rem] bg-black/20 p-6 md:min-h-[420px] md:gap-4 md:p-8">
+              <img src={NERELIY_IMG} alt="Нерелий" className="h-36 w-28 object-contain drop-shadow-2xl md:h-52 md:w-36" />
+              <img src={AREYA_IMG} alt="Айрея" className="h-36 w-28 -mt-6 object-contain drop-shadow-2xl md:h-52 md:w-36" />
+              <img src={EMIRO_IMG} alt="Эмиро" className="h-36 w-28 object-contain drop-shadow-2xl md:h-52 md:w-36" />
+            </div>
+          </div>
+          <div>
+            <p className="mb-4 text-xs uppercase tracking-[0.35em] text-[#b8945f]">смысл</p>
+            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl">Это больше, чем игрушка</h2>
+            <p className="mt-5 text-base leading-9 text-[#6f6254] md:mt-6 md:text-lg">
+              Это первый мягкий язык эмоций для ребёнка. И красивое напоминание взрослому о внутреннем мире.
             </p>
+            <div className="mt-8 grid gap-4 md:mt-10 md:grid-cols-3">
+              {([
+                ["Для детей", "Понимать чувства через игру"],
+                ["Для родителей", "Говорить о важном легко"],
+                ["Для взрослых", "Талисман со смыслом"],
+              ] as const).map(([t, d]) => (
+                <div key={t} className="rounded-3xl bg-white/70 p-5 shadow-sm md:p-6">
+                  <h4 className="font-serif text-xl md:text-2xl">{t}</h4>
+                  <p className="mt-2 text-sm leading-6 text-[#756856] md:mt-3">{d}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    </footer>
+      </section>
+
+      {/* PREORDER */}
+      <section className="bg-[#10140e] px-5 py-16 text-[#f6ead5] md:py-24">
+        <SectionTitle eyebrow="первая коллекция" title="Little Spirits First Edition" text="Ручная работа. Ограниченный тираж. Нумерованные фигурки." />
+        <div className="mx-auto mt-10 grid max-w-5xl items-center gap-8 rounded-[2.5rem] border border-[#e5d1aa]/15 bg-[#181a14] p-6 md:mt-12 md:grid-cols-[1fr_1.2fr] md:p-8">
+          <div className="overflow-hidden rounded-[2rem] bg-[#ead9bd] p-5 shadow-inner md:p-8">
+            <div className="flex items-center justify-center gap-3">
+              <img src={EMIRO_IMG} alt="Эмиро" className="h-32 w-24 object-contain drop-shadow-xl md:h-44 md:w-36" />
+              <img src={NERELIY_IMG} alt="Нерелий" className="h-32 w-24 -mt-4 object-contain drop-shadow-xl md:h-44 md:w-36" />
+            </div>
+          </div>
+          <div>
+            <div className="grid grid-cols-4 gap-2 text-center md:gap-3">
+              {[["12", "дней"], ["08", "часов"], ["34", "мин."], ["19", "сек."]].map(([n, l]) => (
+                <div key={l} className="rounded-2xl border border-[#e5d1aa]/15 p-3 md:p-5">
+                  <div className="font-serif text-2xl md:text-4xl">{n}</div>
+                  <div className="text-xs text-[#bda984]">{l}</div>
+                </div>
+              ))}
+            </div>
+            <Button className="mt-6 rounded-full bg-[#d7bd8d] px-7 py-5 text-[#21170f] hover:bg-white md:mt-8 md:px-8 md:py-6">
+              Забронировать
+            </Button>
+            <p className="mt-3 text-sm text-[#c7b79a] md:mt-4">Бесплатная доставка при предзаказе</p>
+          </div>
+        </div>
+      </section>
+
+      {/* REVIEWS */}
+      <section id="reviews" className="bg-[#efe1ca] px-5 py-16 md:py-24">
+        <SectionTitle title="Они уже нашли своего героя" />
+        <div className="mx-auto mt-10 grid max-w-6xl gap-5 md:mt-12 md:grid-cols-3">
+          {[
+            "Мой ребёнок стал спокойнее и начал говорить о чувствах через героев.",
+            "Купила Эмиро себе на рабочий стол. Он каждый день напоминает быть мягче к себе.",
+            "Это больше, чем декор. Спасибо за такую красоту.",
+          ].map((q, i) => (
+            <Card key={q} className="rounded-[2rem] border-0 bg-white/70 p-6 shadow-sm md:p-7">
+              <CardContent className="p-0">
+                <div className="mb-4 flex text-[#c59d5f]">
+                  {Array.from({ length: 5 }).map((_, idx) => <Star key={idx} size={16} fill="currentColor" />)}
+                </div>
+                <p className="leading-8 text-[#5c5143]">{q}</p>
+                <p className="mt-5 text-sm text-[#92744d] md:mt-6">Покупатель #{i + 1}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="bg-[#f7efe3] px-5 py-12 md:py-16">
+        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.2fr_2fr_1.2fr] md:gap-10">
+          <div>
+            <div className="font-serif text-3xl tracking-widest md:text-4xl">LITTLE<br />SPIRITS</div>
+            <p className="mt-4 text-sm leading-7 text-[#6f6254] md:mt-5">Маленькие хранители большого внутреннего мира</p>
+          </div>
+          <div className="grid grid-cols-3 gap-4 text-sm text-[#6f6254] md:gap-6">
+            <div>
+              <h4 className="mb-3 text-[#34271e] md:mb-4">Магазин</h4>
+              <p className="mb-2">Все товары</p>
+              <p className="mb-2">Коллекции</p>
+              <p>Подарки</p>
+            </div>
+            <div>
+              <h4 className="mb-3 text-[#34271e] md:mb-4">О мире</h4>
+              <p className="mb-2">История</p>
+              <p className="mb-2">Философия</p>
+              <p>Материалы</p>
+            </div>
+            <div>
+              <h4 className="mb-3 text-[#34271e] md:mb-4">Помощь</h4>
+              <p className="mb-2">Доставка</p>
+              <p className="mb-2">Возврат</p>
+              <p>Контакты</p>
+            </div>
+          </div>
+          <div>
+            <h4 className="mb-4 font-serif text-xl md:text-2xl">Войти в мир Little Spirits</h4>
+            <div className="flex overflow-hidden rounded-full bg-white shadow-sm">
+              <input className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm outline-none md:px-5" placeholder="Ваш e-mail" />
+              <Button className="rounded-full bg-[#596441] px-4 md:px-5">
+                <Mail size={18} />
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="mx-auto mt-10 max-w-7xl border-t border-[#d6c5a8]/40 pt-7 text-center text-xs text-[#9c8e7a]">
+          © 2025 Little Spirits. Все права защищены.
+        </div>
+      </footer>
+    </main>
   );
 }
-
-function MobileFloatBtn() {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const handler = () => setVisible(window.scrollY > 300);
-    window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
-
-  return (
-    <a
-      href="#heroes"
-      className="md:hidden fixed bottom-6 left-1/2 z-50 btn-primary rounded-full flex items-center gap-2"
-      style={{
-        transform: visible
-          ? "translateX(-50%) translateY(0)"
-          : "translateX(-50%) translateY(100px)",
-        transition: "transform 0.5s cubic-bezier(0.16,1,0.3,1)",
-        boxShadow: "0 8px 32px rgba(139,107,74,0.35)",
-        padding: "0.75rem 1.75rem",
-      }}
-    >
-      <span style={{ position: "relative", zIndex: 1, fontSize: "0.75rem", letterSpacing: "0.1em" }}>
-        Выбрать героя
-      </span>
-      <Icon name="ArrowRight" size={14} style={{ position: "relative", zIndex: 1, color: "var(--color-milk)" }} />
-    </a>
-  );
-}
-
-const Index = () => {
-  useReveal();
-
-  return (
-    <div style={{ background: "var(--color-milk)" }}>
-      <Nav />
-      <HeroSection />
-      <StatesSection />
-      <HeroesSection />
-      <FeaturesSection />
-      <StorySection />
-      <MobileFloatBtn />
-      <FaqSection />
-      <CtaSection />
-      <Footer />
-    </div>
-  );
-};
-
-export default Index;
